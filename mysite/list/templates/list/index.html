@@ -1,0 +1,9 @@
+{% if latest_manga_list %}
+    <ul>
+    {% for entry in latest_manga_list %}
+        <li><a href="{% url 'list:detail' entry.id %}">{{ entry.name}}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No manga are available.</p>
+{% endif %}
