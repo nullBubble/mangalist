@@ -1,9 +1,28 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'list/style.css' %}">
+
 {% if latest_manga_list %}
     <ul>
-    {% for entry in latest_manga_list %}
-        <li><a href="{% url 'list:detail' entry.id %}">{{ entry.name}}</a></li>
+    {% for entry, id in latest_manga_list %}
+        <li class="mangalist">
+            <a href="{{entry.link}}">
+                <img src="https://mangadex.org/images/manga/{{id}}.jpg" alt="pseudo harem" style="width:150px;height:200px">
+            </a> 
+            <a href="{%url 'list:detail' entry.id %}">{{entry.name}}</a>
+            
+            <form  class="inline">
+                <label>Chapter</label>
+                <input id="chapter" type="number" style="width:70px" name="chapter" value="{{entry.current_chapter}}">
+                <input type="submit" value="Update">
+            </form> 
+            
+
+            
+        </li>  
     {% endfor %}
     </ul>
+  
 {% else %}
     <p>No manga are available.</p>
 {% endif %}
