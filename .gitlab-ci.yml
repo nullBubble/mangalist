@@ -6,4 +6,4 @@ before_script:
 
 run-test:
   script: 
-    - python3 --version
+    - python3 manage.py runserver

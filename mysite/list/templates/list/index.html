@@ -10,10 +10,17 @@
                 <img src="https://mangadex.org/images/manga/{{id}}.jpg" alt="pseudo harem" style="width:150px;height:200px">
             </a> 
             <a href="{%url 'list:detail' entry.id %}">{{entry.name}}</a>
-            
-            <form  class="inline">
+            Chapter: {{entry.current_chapter}}
+            <form action="/" method='POST' class="inline">
+                <!--
                 <label>Chapter</label>
                 <input id="chapter" type="number" style="width:70px" name="chapter" value="{{entry.current_chapter}}">
+                -->
+                {% csrf_token %}
+                
+                {{form}}
+                
+                
                 <input type="submit" value="Update">
             </form> 
             
