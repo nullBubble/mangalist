@@ -1,0 +1,12 @@
+<form action="" method='POST' class="inline">
+    {% csrf_token %}
+    <label>Name</label>
+    <input id="name" type="text" style="width:250px" name="new_manga" value="Enter the name of the manga">
+
+    <label>Chapter</label>
+    <input id="chapter" type="number" style="width:70px" name="chapter" value="Enter the current chapter">
+
+    <label>Mangadex Link</label>
+    <input id="url" type="url" style="width:250px" name="url" value="Enter the Mangadex Link">
+    <input type="submit" value="Update">
+</form> 
