@@ -8,6 +8,8 @@ def index(request):
     if request.method == 'POST':
         string = str(request.body).strip("'").rsplit('&')[1]
         name, chapter = string.split('=')[0], string.split('=')[1]
+        name = name.replace("+"," ")
+        print(name)
         if chapter != '':
             man = MangaEntry.objects.get(name=name)
             man.current_chapter = chapter
@@ -27,4 +29,17 @@ def index(request):
     return render(request, 'list/index.html', context)
 
 def add_manga(request):
+    if request.method == 'POST':
+        if str(request.body).find('&') != -1:
+            print(request.body)
+            string = str(request.body).strip("'").rsplit('&')
+            name = string[1].split('=')[1]
+            name = name.replace("+", " ")
+            ch = string[2].split('=')[1]
+            link = string[3].split('=')[1].replace("%3A",":")
+            link = link.replace("%2F","/")
+            
+            new_entry = MangaEntry.objects.create(name=name,current_chapter=ch,link=link)
+            new_entry.save()
+            return HttpResponseRedirect('/')
     return render(request,'list/add_manga.html')
