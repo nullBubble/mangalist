@@ -1,0 +1,11 @@
+<form action="" method='POST'>
+    {% csrf_token %}
+    <label>Choose the to be deleted manga:</label>
+    <select id="deleted_manga" name="deleted_manga">
+        
+        {% for entry in latest_manga_list %}
+            <option value="{{entry.name}}">{{entry.name}}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Delete manga">
+</form>

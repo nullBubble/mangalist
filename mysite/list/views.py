@@ -29,6 +29,7 @@ def index(request):
     return render(request, 'list/index.html', context)
 
 def add_manga(request):
+    print(request)
     if request.method == 'POST':
         if str(request.body).find('&') != -1:
             print(request.body)
@@ -43,3 +44,17 @@ def add_manga(request):
             new_entry.save()
             return HttpResponseRedirect('/')
     return render(request,'list/add_manga.html')
+
+def delete_manga(request):
+    latest_manga_list = MangaEntry.objects.order_by('-name')
+    context = {
+        'latest_manga_list': latest_manga_list,
+    }
+    if request.method == 'POST':
+        if str(request.body).find('&') != -1:
+            string = str(request.body).strip("'").rsplit('&')
+            name = string[1].split('=')[1]
+            entry = MangaEntry.objects.get(name=name)
+            entry.delete()
+            return HttpResponseRedirect('/')
+    return render(request,'list/delete_manga.html', context)

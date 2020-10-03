@@ -4,6 +4,10 @@
     <input type="submit" value="Add new manga">
 </form> 
 
+<form action="delete_manga/" method='POST' class="inline">
+    {% csrf_token %}
+    <input type="submit" value="Delete manga">
+</form> 
 
 <link rel="stylesheet" type="text/css" href="{% static 'list/style.css' %}">
 
@@ -11,9 +15,7 @@
     <ul>
     {% for entry, id in latest_manga_list %}
         <li class="mangalist">
-            <a href="{{entry.link}}">
-                <img src="https://mangadex.org/images/manga/{{id}}.jpg" alt="pseudo harem" style="width:150px;height:200px">
-            </a> 
+            <a href="{{entry.link}}"><img src="https://mangadex.org/images/manga/{{id}}.jpg" onerror="this.src='https://mangadex.org/images/manga/{{id}}.jpeg'" alt="volume cover" style="width:150px;height:200px"></a>
             {{entry.name}}
             <form action="" method='POST' class="inline">
                 {% csrf_token %}
