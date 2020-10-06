@@ -3,6 +3,7 @@ from django.shortcuts import render,get_object_or_404
 from django.template import loader
 from django.http import Http404
 from .models import MangaEntry
+from django.contrib import messages
 
 def index(request):
     if request.method == 'POST':
@@ -28,17 +29,20 @@ def index(request):
     }
     return render(request, 'list/index.html', context)
 
-def add_manga(request):
-    print(request)
+def add_manga(request): 
+    # TODO: add only with a name that is not taken already and check for empty chapter
     if request.method == 'POST':
         if str(request.body).find('&') != -1:
-            print(request.body)
             string = str(request.body).strip("'").rsplit('&')
             name = string[1].split('=')[1]
             name = name.replace("+", " ")
             ch = string[2].split('=')[1]
             link = string[3].split('=')[1].replace("%3A",":")
             link = link.replace("%2F","/")
+
+            if "mangadex" not in link:
+                messages.error(request, "Provide correct link")
+                return HttpResponseRedirect('/add_manga/')
             
             new_entry = MangaEntry.objects.create(name=name,current_chapter=ch,link=link)
             new_entry.save()
