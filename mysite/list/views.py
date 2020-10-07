@@ -2,18 +2,18 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render,get_object_or_404
 from django.template import loader
 from django.http import Http404
+from django.urls import reverse
 from .models import MangaEntry
 from django.contrib import messages
 
 def index(request):
     if request.method == 'POST':
-        string = str(request.body).strip("'").rsplit('&')[1]
-        name, chapter = string.split('=')[0], string.split('=')[1]
-        name = name.replace("+"," ")
-        print(name)
-        if chapter != '':
+        data = request.POST.copy()
+        data.pop('csrfmiddlewaretoken')
+        name = list(data.keys())[0]
+        if data.get(name) != '':
             man = MangaEntry.objects.get(name=name)
-            man.current_chapter = chapter
+            man.current_chapter = data.get(name)
             man.save()
             return HttpResponseRedirect('/')
         
@@ -29,25 +29,29 @@ def index(request):
     }
     return render(request, 'list/index.html', context)
 
-def add_manga(request): 
-    # TODO: add only with a name that is not taken already and check for empty chapter
+def add_manga(request):
     if request.method == 'POST':
-        if str(request.body).find('&') != -1:
-            string = str(request.body).strip("'").rsplit('&')
-            name = string[1].split('=')[1]
-            name = name.replace("+", " ")
-            ch = string[2].split('=')[1]
-            link = string[3].split('=')[1].replace("%3A",":")
-            link = link.replace("%2F","/")
+        data = request.POST
+        if "new_manga" in data.keys() and "chapter" in data.keys() and "url" in data.keys():
+            latest_manga_list = MangaEntry.objects.order_by('-name')
+            names = []
+            for entry in latest_manga_list:
+                names.append(entry.name)
 
-            if "mangadex" not in link:
+            if data.get('new_manga') == "" or data.get('new_manga') in names:
+                messages.error(request, "Enter a valid name and one that is not taken")
+                return HttpResponseRedirect(reverse('list:add_manga'))
+            if "mangadex" not in data.get('url'):
                 messages.error(request, "Provide correct link")
-                return HttpResponseRedirect('/add_manga/')
-            
-            new_entry = MangaEntry.objects.create(name=name,current_chapter=ch,link=link)
+                return HttpResponseRedirect(reverse('list:add_manga'))
+            if data.get('chapter') == "":
+                messages.error(request, "Enter a valid chapter number")
+                return HttpResponseRedirect(reverse('list:add_manga'))
+
+            new_entry = MangaEntry.objects.create(name=data.get('new_manga'),current_chapter=data.get('chapter'),link=data.get('url'))
             new_entry.save()
             return HttpResponseRedirect('/')
-    return render(request,'list/add_manga.html')
+    return render(request,'list/add_manga.html')    
 
 def delete_manga(request):
     latest_manga_list = MangaEntry.objects.order_by('-name')
@@ -55,10 +59,9 @@ def delete_manga(request):
         'latest_manga_list': latest_manga_list,
     }
     if request.method == 'POST':
-        if str(request.body).find('&') != -1:
-            string = str(request.body).strip("'").rsplit('&')
-            name = string[1].split('=')[1]
-            entry = MangaEntry.objects.get(name=name)
+        data = request.POST
+        if "deleted_manga" in data.keys():
+            entry = MangaEntry.objects.get(name=data['deleted_manga'])
             entry.delete()
             return HttpResponseRedirect('/')
     return render(request,'list/delete_manga.html', context)

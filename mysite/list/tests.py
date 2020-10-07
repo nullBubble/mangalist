@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.test.client import Client
-
+from django.urls import reverse
 # Create your tests here.
 
 class AddViewTests(TestCase):
@@ -15,16 +15,15 @@ class AddViewTests(TestCase):
     def test_check_if_wrong_url(self):
         # Check if the supplied url is a Mangadex link and not some other website link
         client = Client()
-        response = self.client.post('/add_manga/', {'new_manga': 'test', 'chapter': 33, 'url':'https://google.com'}, follow=True)
-        print(response.redirect_chain)
-        self.assertRedirects(response, '/add_manga/', status_code=301, target_status_code=200)
+        response = self.client.post(reverse('list:add_manga'), {'new_manga': 'test', 'chapter': 33, 'url':'https://google.com'}, follow=True)
+        self.assertRedirects(response, '/add_manga/')
 
     def test_check_if_correct_url(self):
         # Check if the supplied url is a Mangadex link and not some other website link
         client = Client()
-        response = self.client.post('/add_manga/', {'new_manga': 'test', 'chapter': 33, 'url':'https://mangadex.org'}, follow=True)
-        print(response.redirect_chain)
-        self.assertRedirects(response, '/', status_code=301, target_status_code=200)
+        response = self.client.post('/add_manga/', {'new_manga': 'test', 'chapter': 33, 'url':'https://mangadex.org'},follow=True)
+        
+        self.assertRedirects(response, '/')
 
 
         
