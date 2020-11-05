@@ -13,4 +13,5 @@ before_script:
 
 run-test:
   script: 
-    - python3 mysite/manage.py test
+    - cd mysite
+    - python3 manage.py test
