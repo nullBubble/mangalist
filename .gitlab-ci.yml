@@ -10,7 +10,6 @@ before_script:
   - cd mysite
   - python3 manage.py test
 
-# run-test:
-#   script: 
-#     - cd mysite
-#     - python3 manage.py test
+run-test:
+  script: 
+    - echo "test"
