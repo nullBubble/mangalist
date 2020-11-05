@@ -13,4 +13,4 @@ before_script:
 
 run-test:
   script: 
-    - python3 manage.py test
+    - python3 mysite/manage.py test
