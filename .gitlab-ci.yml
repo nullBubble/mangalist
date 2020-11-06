@@ -1,5 +1,9 @@
 image: ubuntu:latest
 
+# alias is set to localhost since gitlab runner runs the database in a separate container and
+# in the settings.py file of the django project it is defined that the database is on the same
+# host. so the database is renamed to localhost:27017, which is the default port, for the 
+# network adress from the usual mongo:27017
 services: 
   - name: mongo:latest
     alias: localhost
