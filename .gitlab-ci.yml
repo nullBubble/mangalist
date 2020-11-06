@@ -1,8 +1,8 @@
 image: ubuntu:latest
 
 services: 
-  - mongo:latest
-  alias: localhost
+  - name: mongo:latest
+    alias: localhost
 
 before_script:
   - apt-get update -qy
