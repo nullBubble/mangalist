@@ -29,10 +29,10 @@
     - start mongodb
     when: mongo_install.stdout.find('version') == -1
 
-  - name: copy project folder to desktop
+  - name: copy project folder 
     copy: 
-      src: /home/minh/Desktop/mangalist_gitlab
-      dest: /home/minh/Desktop/mangalist_gitlab
+      src: /app/mangalist_gitlab
+      dest: /app/mangalist_gitlab
       mode: 0644
       owner: root
       group: root
@@ -92,11 +92,11 @@
       sudo pip3 install django
       sudo pip3 install djongo
       sudo pip3 install sqlparse==0.2.4
-      cp /etc/nginx/uwsgi_params /home/minh/Desktop/mangalist_gitlab/mysite
+      cp /etc/nginx/uwsgi_params /app/mangalist_gitlab/mysite
 
   - name: collect django static files and start server
     shell: |
-      cd /home/minh/Desktop/mangalist_gitlab/mysite
+      cd /app/mangalist_gitlab/mysite
       python3 manage.py collectstatic --noinput 
       python3 manage.py migrate
       sudo systemctl start uwsgi.service
