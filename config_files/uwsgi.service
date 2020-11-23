@@ -3,7 +3,7 @@ Description=uWSGI for Django
 After=syslog.target
 
 [Service]
-WorkingDirectory=/app/mangalist_gitlab/mysite
+WorkingDirectory=/app/mangalist/mysite
 ExecStart=/usr/local/bin/uwsgi --socket :8001 --module mysite.wsgi
 Restart=always
 KillSignal=SIGQUIT

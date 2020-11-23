@@ -31,8 +31,8 @@
 
   - name: copy project folder 
     copy: 
-      src: /app/mangalist_gitlab
-      dest: /app/mangalist_gitlab
+      src: /app/mangalist
+      dest: /app/
       mode: 0644
       owner: root
       group: root
@@ -74,7 +74,6 @@
     copy:
       src: /etc/systemd/system/uwsgi.service
       dest: /etc/systemd/system/uwsgi.service
-      force: no
       mode: 0644
       owner: root
       group: root
@@ -92,13 +91,14 @@
       sudo pip3 install django
       sudo pip3 install djongo
       sudo pip3 install sqlparse==0.2.4
-      cp /etc/nginx/uwsgi_params /app/mangalist_gitlab/mysite
+      cp /etc/nginx/uwsgi_params /app/mangalist/mysite
 
   - name: collect django static files and start server
     shell: |
-      cd /app/mangalist_gitlab/mysite
+      cd /app/mangalist/mysite
       python3 manage.py collectstatic --noinput 
       python3 manage.py migrate
+      sudo systemctl daemon-reload
       sudo systemctl start uwsgi.service
     notify:
     - restart nginx
