@@ -1,0 +1,27 @@
+li a {
+    color: blue;
+}
+body {
+    background: gray url("images/gray.png")
+}
+
+.mangalist {
+    padding-top: 15px;
+    font-size: 20px;
+}
+
+.mangalist img {
+    vertical-align:middle;
+    margin-right: 15px;
+}
+
+.inline {
+    display: inline-block;
+    flex-flow: row wrap;
+    align-items: center;
+}
+
+.id_chapter {
+    width: 80px;
+}
+

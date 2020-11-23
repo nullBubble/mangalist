@@ -1,0 +1,122 @@
+- hosts: servers
+  become: yes
+  
+  tasks:
+  - name: install nginx, wget and python+pip
+    apt:
+      name: 
+        - nginx 
+        - wget 
+        - python3 
+        - python3-pip
+      update_cache: true
+      state: present
+    notify:
+    - start nginx
+
+  - name: check if mongodb is installed
+    shell: mongod --version
+    register: mongo_install
+
+  - name: install mongodb
+    shell: |
+      wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+      sudo apt-get install gnupg
+      echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+      sudo apt-get update
+      sudo apt-get install -y mongodb-org
+    notify:
+    - start mongodb
+    when: mongo_install.stdout.find('version') == -1
+
+  - name: copy project folder to desktop
+    copy: 
+      src: /home/minh/Desktop/mangalist_gitlab
+      dest: /home/minh/Desktop/mangalist_gitlab
+      mode: 0644
+      owner: root
+      group: root
+
+  - name: check if default nginx config files are present
+    stat: 
+      path: /etc/nginx/sites-available/default
+    register: default_nginx
+
+  - name: remove default nginx folders
+    file: 
+      path: '{{item}}'
+      state: absent
+    with_items:
+      - /etc/nginx/sites-available
+      - /etc/nginx/sites-enabled
+    register: removed_folder
+    when: default_nginx.stat.exists
+
+  - name: recreate folders 
+    file: 
+      path: '{{item}}'
+      state: directory
+    with_items:
+      - /etc/nginx/sites-available
+      - /etc/nginx/sites-enabled
+    when: removed_folder is defined
+
+  - name: copy necessary nginx files
+    copy: 
+      src: /etc/nginx/sites-available/mysite.conf
+      dest: /etc/nginx/sites-available/mysite.conf
+      mode: 0644
+      owner: root
+      group: root
+    when: default_nginx is defined
+  
+  - name: copy systemd file
+    copy:
+      src: /etc/systemd/system/uwsgi.service
+      dest: /etc/systemd/system/uwsgi.service
+      force: no
+      mode: 0644
+      owner: root
+      group: root
+
+
+  - name: create symlink between available and enabled
+    file:
+      src: /etc/nginx/sites-available/mysite.conf
+      dest: /etc/nginx/sites-enabled/mysite.conf
+      state: link
+
+  - name: install uwsgi and django
+    shell: |
+      sudo pip3 install uwsgi
+      sudo pip3 install django
+      sudo pip3 install djongo
+      sudo pip3 install sqlparse==0.2.4
+      cp /etc/nginx/uwsgi_params /home/minh/Desktop/mangalist_gitlab/mysite
+
+  - name: collect django static files and start server
+    shell: |
+      cd /home/minh/Desktop/mangalist_gitlab/mysite
+      python3 manage.py collectstatic --noinput 
+      python3 manage.py migrate
+      sudo systemctl start uwsgi.service
+    notify:
+    - restart nginx
+
+  handlers:
+  - name: start nginx
+    service:
+      name: nginx
+      state: started
+      enabled: yes
+
+  - name: start mongodb
+    service:
+      name: mongod
+      state: started
+      enabled: yes
+
+  - name: restart nginx
+    service:
+      name: nginx
+      state: restarted

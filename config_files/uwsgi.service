@@ -1,0 +1,15 @@
+[Unit]
+Description=uWSGI for Django
+After=syslog.target
+
+[Service]
+WorkingDirectory=/app/mangalist_gitlab/mysite
+ExecStart=/usr/local/bin/uwsgi --socket :8001 --module mysite.wsgi
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
