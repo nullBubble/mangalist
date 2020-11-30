@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-deployment
+  labels:
+    app: ml-front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ml-front
+  template:
+    metadata:
+      labels:
+        app: ml-front
+    spec:
+      containers:
+      - name: ml
+        image: nullbubble/mangalist:02
+        ports:
+        - containerPort: 80
+      hostAliases:
+      - ip: "10.0.2.2"
+        hostnames:
+        - "mongo"

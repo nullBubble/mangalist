@@ -17,6 +17,7 @@
   - name: check if mongodb is installed
     shell: mongod --version
     register: mongo_install
+    ignore_errors: true
 
   - name: install mongodb
     shell: |
@@ -37,29 +38,12 @@
       owner: root
       group: root
 
-  - name: check if default nginx config files are present
-    stat: 
+  - name: delete default nginx file
+    file:
       path: /etc/nginx/sites-available/default
-    register: default_nginx
-
-  - name: remove default nginx folders
-    file: 
-      path: '{{item}}'
       state: absent
-    with_items:
-      - /etc/nginx/sites-available
-      - /etc/nginx/sites-enabled
-    register: removed_folder
-    when: default_nginx.stat.exists
-
-  - name: recreate folders 
-    file: 
-      path: '{{item}}'
-      state: directory
-    with_items:
-      - /etc/nginx/sites-available
-      - /etc/nginx/sites-enabled
-    when: removed_folder is defined
+    tags:
+    - test
 
   - name: copy necessary nginx files
     copy: 
@@ -68,8 +52,15 @@
       mode: 0644
       owner: root
       group: root
-    when: default_nginx is defined
-  
+    notify:
+    - restart nginx
+
+  - name: create symlink between available and enabled
+    file:
+      src: /etc/nginx/sites-available/mysite.conf
+      dest: /etc/nginx/sites-enabled/mysite.conf
+      state: link
+
   - name: copy systemd file
     copy:
       src: /etc/systemd/system/uwsgi.service
@@ -78,19 +69,13 @@
       owner: root
       group: root
 
-
-  - name: create symlink between available and enabled
-    file:
-      src: /etc/nginx/sites-available/mysite.conf
-      dest: /etc/nginx/sites-enabled/mysite.conf
-      state: link
-
   - name: install uwsgi and django
+    become: yes
     shell: |
-      sudo pip3 install uwsgi
-      sudo pip3 install django
-      sudo pip3 install djongo
-      sudo pip3 install sqlparse==0.2.4
+      pip3 install uwsgi
+      pip3 install django
+      pip3 install djongo
+      pip3 install sqlparse==0.2.4
       cp /etc/nginx/uwsgi_params /app/mangalist/mysite
 
   - name: collect django static files and start server
