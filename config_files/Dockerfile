@@ -1,21 +1,32 @@
-FROM ubuntu:18.04
+FROM ubuntu:18.04 as base
 
 RUN apt-get update \
- && apt-get -y install sudo
+ && apt-get -y install sudo wget nginx python3 python3-pip
 
-RUN apt-get install -y wget nginx python3 python3-pip iputils-ping
+COPY reqs.txt . 
 
-RUN pip3 install uwsgi django djongo sqlparse==0.2.4
+RUN pip3 install --user -r reqs.txt
+
+FROM ubuntu:18.04
+
+COPY --from=base /root/.local /root/.local
+
+COPY --from=base /usr/lib/x86_64-linux-gnu/libpython3.6m.so.1.0 /usr/lib
+
+RUN apt-get update \
+&& apt-get -y install python3 nginx
+
+ENV PATH=/root/.local/bin:$PATH
 
 COPY mangalist /app/mangalist
 
 WORKDIR /app/mangalist/mysite
 
+RUN rm -f /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
 COPY config_files/mysite.conf /etc/nginx/sites-available/mysite.conf
 
-RUN sudo ln -s /etc/nginx/sites-available/mysite.conf /etc/nginx/sites-enabled/mysite.conf
-
-RUN rm -f /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+RUN ln -s /etc/nginx/sites-available/mysite.conf /etc/nginx/sites-enabled/mysite.conf
 
 RUN python3 manage.py collectstatic --noinput
 
@@ -30,4 +41,4 @@ CMD python3 manage.py makemigrations && \
 ## build the image
 ## docker build -t mangalist --network mynet .
 ## start a container form the image
-## docker run -d --network mynet mangalist
+## docker run -d --network mynet nullbubble/mangalist:tag
