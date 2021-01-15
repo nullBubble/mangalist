@@ -1,7 +1,7 @@
 FROM ubuntu:18.04 as base
 
 RUN apt-get update \
- && apt-get -y install sudo wget nginx python3 python3-pip
+ && apt-get -y install python3 python3-pip
 
 COPY reqs.txt . 
 

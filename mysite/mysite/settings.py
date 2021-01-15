@@ -79,6 +79,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'mangadb',
+        'CLIENT': {
+           'host': 'mongo',
+        }
     }
 }
 
