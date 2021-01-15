@@ -6,7 +6,6 @@ image: ubuntu:latest
 # network adress from the usual mongo:27017
 services: 
   - name: mongo:latest
-    alias: localhost
 
 before_script:
   - apt-get update -qy
