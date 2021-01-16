@@ -6,16 +6,16 @@ stages:
 # host. so the database is renamed to localhost:27017, which is the default port, for the 
 # network adress from the usual mongo:27017
 test:
+  stage: test
   image: ubuntu:latest
 
   services: 
     - name: mongo:latest
-
-  run-test:
-    before_script:
-      - apt-get update -qy
-      - apt-get install -y python3 python3-pip wget mongodb
-      - pip3 install -r reqs.txt
-    script: 
-      - cd mysite
-      - python3 manage.py test
+    
+  before_script:
+    - apt-get update -qy
+    - apt-get install -y python3 python3-pip wget mongodb
+    - pip3 install -r reqs.txt
+  script: 
+    - cd mysite
+    - python3 manage.py test
