@@ -1,12 +1,12 @@
 {% load static %}
 <form action="add_manga/" method='POST' class="inline">
     {% csrf_token %}
-    <input type="submit" value="Add new manga">
+    <input type="submit" value="Add new Manga">
 </form> 
 
 <form action="delete_manga/" method='POST' class="inline">
     {% csrf_token %}
-    <input type="submit" value="Delete manga">
+    <input type="submit" value="Delete Manga">
 </form> 
 
 <link rel="stylesheet" type="text/css" href="{% static 'list/style.css' %}">
