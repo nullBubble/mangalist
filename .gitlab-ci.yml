@@ -1,5 +1,10 @@
 stages:
   - test
+  - upload
+
+variables:
+  TAG_LATEST: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:LATEST
+  TAG_COMMIT: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:$CI_COMMIT_SHORT_SHA
 
 # alias is set to localhost since gitlab runner runs the database in a separate container and
 # in the settings.py file of the django project it is defined that the database is on the same
@@ -19,3 +24,19 @@ test:
   script: 
     - cd mysite
     - python3 manage.py test
+
+
+upload:
+  stage: upload
+  image: docker:latest
+  services:
+    - docker:dind
+
+  before_script:
+    - docker network create mynet
+
+  script:
+    - docker build -t $TAG_COMMIT -t $TAG_LATEST --network mynet
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker push $TAG_COMMIT
+    - docker push $TAG_LATEST
