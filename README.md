@@ -5,9 +5,9 @@ This is an example project where a Django web application gets build and automat
 The Django project was written by myself to show some basic understanding and my usual style of Python. It can either be run by installing nginx and configuring the server locally or by running an included Docker image.
 
 The website looks like this 
-!(./Pictures/Home.png)
-!(./Pictures/Add.png)
-!(./Pictures/Delete.png)
+![](Pictures/Home.png)
+![](Pictures/Add.png)
+![](Pictures/Delete.png)
 
  and can execute the CRUD functions, e.g:
     1. Add an entry
