@@ -1,3 +1,8 @@
+# This playbook is meant to be run on servers to configure them to run the Django application locally.
+# It installs the necessary services such as nginx, Python, MongoDB and copies all the files to the 
+# remote server. Afterwards it sets up nginx with the necessary files and sets a Linux service which
+# starts the Django application.
+
 - hosts: servers
   become: yes
   

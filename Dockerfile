@@ -1,3 +1,12 @@
+# This Docker image needs a MongoDB instance. One can be started with the following command:
+# docker run -d -p 27017:27017 -v ~/data:/data/db --name mongo --network mynet mongo
+# This command needs a data folder located at home and a Docker networked which can be created like this:
+# docker network create mynet
+# Afterwards the Docker image can be built with this:
+# docker build -t nullbubble/mangalist:<tag> --network mynet .
+# Then you run the image with this:
+# docker run -d --network mynet nullbubble/mangalist:<tag>
+
 FROM ubuntu:18.04 as base
 
 RUN apt-get update \
@@ -34,11 +43,3 @@ CMD python3 manage.py makemigrations && \
     python3 manage.py migrate && \
     /etc/init.d/nginx start && \
     uwsgi --socket :8001 --module mysite.wsgi
-
-## start mongodb 
-## mynet is a created network with docker network create mynet
-## docker run -d -p 27017:27017 -v ~/data:/data/db --name mongo --network mynet mongo
-## build the image
-## docker build -t mangalist --network mynet .
-## start a container form the image
-## docker run -d --network mynet nullbubble/mangalist:tag
