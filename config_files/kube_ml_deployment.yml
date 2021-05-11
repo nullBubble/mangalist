@@ -1,3 +1,4 @@
+# Very basic k8s deployment which always keeps 1 replica of the Django applicatoin running
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,9 +17,15 @@ spec:
     spec:
       containers:
       - name: ml
-        image: nullbubble/mangalist:02
+        image: nullbubble/mangalist:latest
         ports:
         - containerPort: 80
+      # This puts an entry in the pod's host file which gives the ip adress 10.0.2.2 the mongo hostname.
+      # The 10.0.2.2 ip adress is an alias to the host loopback interface( 127.0.0.1 on the machine
+      # which the pod is running on). This means that the pod's host machine needs to have a MongoDB
+      # instance running.
+      # This approach having the database on the host machine or possibly on another server has been taken
+      # after some research.
       hostAliases:
       - ip: "10.0.2.2"
         hostnames:

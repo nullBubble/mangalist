@@ -1,3 +1,5 @@
+# Service Unit to start the Django application automatically at boot in the specified directory 
+# and keep it running
 [Unit]
 Description=uWSGI for Django
 After=syslog.target

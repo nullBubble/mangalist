@@ -1,3 +1,4 @@
+# Service for the k8s deployment specifying the necessary ports.
 apiVersion: v1
 kind: Service
 metadata:

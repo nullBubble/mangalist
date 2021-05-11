@@ -1,6 +1,6 @@
 from django.db import models
 
-# Create your models here.
+# Manga model with four attributes
 class MangaEntry(models.Model):
     name = models.CharField(max_length=200,default='Placeholder')
     current_chapter = models.IntegerField(default=0)

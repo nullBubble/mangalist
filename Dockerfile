@@ -16,6 +16,8 @@ COPY reqs.txt .
 
 RUN pip3 install --user -r reqs.txt
 
+# Start from base again and copy from the base image to reduce the image size 
+
 FROM ubuntu:18.04
 
 COPY --from=base /root/.local /root/.local

@@ -52,12 +52,22 @@ The Django image can only be built if a working database is available at the bui
 
 **Ansible**
 
-This project also includes an example playbook which configures a server with all the necessary files and technologies to run the Django application by itself, meaning that the server also runs the database locally.
+This project also includes an example playbook which configures a server with all the necessary files and technologies to run the Django application by itself, meaning that the server also runs the database locally. The playbook is a first draft and can be improved by separating the handlers and grouping up the tasks so that they could be run separately if needed but it has been kept in this way for simplicity's sake for now.
 
 **Kubernetes**
 
-A couple of very basic Kubernetes deployment and service files are available in this project which can be used to start and manage both containers.
+A couple of very basic Kubernetes deployment and service files are available in this project which can be used to start and manage the containers. The database should be running on the host machine on which the pods are running on as specified in the *kube_ml_deployment.yml* file. 
+The Kubernetes files were tested with Minikube. After Minikube has been set up the K8s files can be used in the following way:
+
+`kubectl apply -f kube_ml_deployment.yml`
+
+`kubectl apply -f kube_ml_service.yml`
+
+and afterwards the Django application can be accessed by entering this command in the terminal:
+
+`minikube service ml-service`.
+
 
 **CICD**
 
-A gitlab-ci.yml file is provided in the root folder which tests the Django application by utilizing the built-in test suit with self written tests. If the tests pass successfully the Django image gets uploaded into the Gitlab image repository and and afterwards it logs into a remote server and downloads the recently uploaded image to deploy it to the remote server.
+A gitlab-ci.yml file is provided in the root folder which tests the Django application by utilizing the built-in test suite from Django with self written tests. If the tests pass successfully the Django image gets uploaded into the GitLab image repository and and afterwards it logs into a remote server and downloads the recently uploaded image to deploy it to the remote server.
